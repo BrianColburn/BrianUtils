@@ -1,4 +1,4 @@
-import brian.functional.Memoization;
+import brian.functional.Functions;
 import brian.functional.RecursiveFunction;
 import brian.utils.list.DoubleList;
 
@@ -18,7 +18,7 @@ public class MemoizeFibTest {
             time.add((double) (System.nanoTime() - start));
         }
         System.out.println(time.mean());
-        Memoization.memoize(fib);
+        Functions.memoize(fib);
         System.out.println("Starting memoized fib");
         for (int i = 0; i < 1000; i++) {
             Long start = System.nanoTime();

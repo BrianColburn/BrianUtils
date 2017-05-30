@@ -2,6 +2,7 @@ package brian.functional;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * InfList is basically an indexed infinite iterator.
@@ -28,7 +29,7 @@ import java.util.*;
  */
 public class InfList<T> {
     // The iterator is where the values are generated from
-    private InfIterator<T> iterator;
+    private Supplier<T> supplier;
 
     // This is how we keep track of how many values we've generated
     // It has to be a BigInt because everything else will overflow
@@ -38,9 +39,9 @@ public class InfList<T> {
     private BigInteger size = BigInteger.ZERO;
     private Node<T> list = new Node<>(null,10);
 
-    public InfList(InfIterator<T> iterator) {
-        this.iterator    = iterator;
-        list.children[0] = new Node<>(this.iterator.next(),10);
+    public InfList(Supplier<T> supplier) {
+        this.supplier    = supplier;
+        list.children[0] = new Node<>(this.supplier.get(),10);
     }
 
     public T get(Number index) {
@@ -63,7 +64,7 @@ public class InfList<T> {
             for (int i = 0; i < indices.length - 1; i++) {
                 currentNode = currentNode.children[indices[i]-48];
             }
-            currentNode.children[indices[indices.length-1]-48] = new Node<>(iterator.next(), 10);
+            currentNode.children[indices[indices.length-1]-48] = new Node<>(supplier.get(), 10);
             size = size.add(BigInteger.ONE);
         }
     }
@@ -73,8 +74,8 @@ public class InfList<T> {
         Node<NT>[] children;
 
         Node(NT data, int size) {
-            this.data   = data;
-            children    = new Node[size];
+            this.data = data;
+            children  = new Node[size];
         }
 
         public String toString() {

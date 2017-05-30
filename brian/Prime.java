@@ -1,8 +1,7 @@
 package brian;
 
+import brian.functional.Functions;
 import brian.functional.InfIterator;
-import brian.functional.Memoization;
-import brian.utils.list.IntList;
 import brian.utils.list.LongList;
 
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.LongStream;
 
 public class Prime {
@@ -37,7 +35,7 @@ public class Prime {
         return true;
     };
 
-    public Predicate<Number> memPrimeQ = Memoization.memoize(primeQ);
+    public Predicate<Number> memPrimeQ = Functions.memoize(primeQ);
 
     /**
      * Generates primes from 2 up
