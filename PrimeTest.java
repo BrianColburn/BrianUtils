@@ -11,5 +11,6 @@ public class PrimeTest {
         System.out.println(new Prime().primeQ.test(101) + " " + (System.nanoTime() - start));
         start = System.nanoTime();
         System.out.println(new Prime().primeQ.test(41*43) + " " + (System.nanoTime() - start));
+        System.out.println(new Prime().primeList(10));
     }
 }

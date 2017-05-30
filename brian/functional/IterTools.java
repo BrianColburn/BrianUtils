@@ -4,8 +4,17 @@ import brian.numeric.NumberUtils;
 
 import java.util.*;
 import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
 
 public class IterTools {
+    public static <T> Supplier<T> infIterToSupplier(InfIterator<T> iterator) {
+        return iterator::next;
+    }
+
+    public static <T> InfIterator<T> supplierToInfIterator(Supplier<T> supplier) {
+        return supplier::get;
+    }
+
     public static InfIterator<Long> count(Long init) {
         return count(init, 1L);
     }
