@@ -31,8 +31,8 @@ public class test {
         System.out.println("Final Matrix:\n"+matrix+'\n');
         System.out.println(new IntMatrix(new int[][] {{1,2},{3,4},{5,6}}).transpose().transpose());
 
-        System.out.println(Prime.primeList(10));
-        System.out.println(Prime.primeN(7));
+        System.out.println(new Prime().primeList(10));
+        System.out.println(new Prime().primeN(7));
         Iterator<Long> primes = new Prime().primeIterator();
         for (int i = 0; i < 10; i++) {
             System.out.print(primes.next() + " ");
@@ -48,8 +48,8 @@ public class test {
         System.out.println(intList.mode());
         System.out.println(intList.median());
         System.out.println(intList.map(n -> n*n));
-        System.out.println(intList.filter(Prime.primeQ::test));
-        System.out.println(new IntList(intList.filter(n -> Math.sqrt(n) == (int) Math.sqrt(n)), intList.filter(Prime.primeQ::test)));
+        System.out.println(intList.filter(new Prime().primeQ::test));
+        System.out.println(new IntList(intList.filter(n -> Math.sqrt(n) == (int) Math.sqrt(n)), intList.filter(new Prime().primeQ::test)));
         System.out.println(new HashSet<>(intList).contains(intList.get(4)));
         System.out.println("Final List: "+intList);
 
@@ -58,7 +58,7 @@ public class test {
 
         StreamList<Integer> streamList = new StreamList<>(intList.list());
         System.out.println(streamList);
-        System.out.println(streamList.filter(Prime.primeQ::test));
+        System.out.println(streamList.filter(new Prime().primeQ::test));
         streamList.forEach(System.out::print);
         System.out.println();
         System.out.println(streamList.get(5));
