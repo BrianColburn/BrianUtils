@@ -5,6 +5,7 @@ import brian.numeric.NumberUtils;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class IterTools {
     public static <T> Supplier<T> infIterToSupplier(InfIterator<T> iterator) {

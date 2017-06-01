@@ -66,6 +66,9 @@ public class InfList<T> {
             }
             currentNode.children[indices[indices.length-1]-48] = new Node<>(supplier.get(), 10);
             size = size.add(BigInteger.ONE);
+            System.gc(); // This stops the GC crash...
+                         // Now the test program just doesn't seem to output
+                         // (which could just be because I haven't left it running long enough).
         }
     }
 
