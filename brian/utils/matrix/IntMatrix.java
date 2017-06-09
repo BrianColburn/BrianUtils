@@ -1,6 +1,5 @@
 package brian.utils.matrix;
 
-import brian.Function;
 import brian.utils.list.IntList;
 
 import java.util.ArrayList;
@@ -130,7 +129,7 @@ public class IntMatrix implements NumberMatrix<IntMatrix, IntList, Integer>{
     }
 
     public Boolean magicSquareQ() {
-        return new IntList(sumRows(), sumColumns(), sumDiagonals()).stream().noneMatch(n -> n != (int)(Function.magicConstant(matrix.size())));
+        return new IntList(sumRows(), sumColumns(), sumDiagonals()).stream().noneMatch(n -> n != n * (n * n + 1) / 2);
     }
 
     /**

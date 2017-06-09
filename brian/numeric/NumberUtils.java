@@ -1,10 +1,27 @@
 package brian.numeric;
 
+import brian.functional.Functions;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 /**
  * Created by Colburn2013 on 4/18/2017.
  */
 public class NumberUtils {
-    // This is the closest I can get to a '+' function for parametrically polymorphic "Number" types...
+    public static Number addMany(Number... nums) {
+        return Functions.foldr((Number a, Number b) -> add(a, b), 0, nums);
+    }
+    public static Number subMany(Number... nums) {
+        return Functions.foldr((Number a, Number b) -> sub(a, b), 0, nums);
+    }
+    public static Number mulMany(Number... nums) {
+        return Functions.foldr((Number a, Number b) -> mul(a, b), 1, nums);
+    }
+    public static Number divMany(Number... nums) {
+        return Functions.foldr((Number a, Number b) -> div(a, b), 1, nums);
+    }
+
     public static Number add(Number n1, Number n2) {
         if (n1 instanceof Integer) {
             Integer num = (Integer) n1;
@@ -168,7 +185,8 @@ public class NumberUtils {
                 return num + nd;
             }
         }
-        throw new IllegalArgumentException("Arguments must be one of the following classes: 'Integer', 'Long', 'Double', 'Float', 'Byte', or 'Short'.");
+        throw new IllegalArgumentException("Arguments must be one of the following classes: 'Integer', 'Long', 'Double', 'Float', 'Byte', or 'Short'.\n" +
+                "Received: "+n1.getClass().getName()+" and "+n2.getClass().getName());
     }
 
     public static Number sub(Number n1, Number n2) {
@@ -338,7 +356,8 @@ public class NumberUtils {
                 return num * nd;
             }
         }
-        return n1.doubleValue()*n2.doubleValue();
+        throw new IllegalArgumentException("Arguments must be one of the following classes: 'Integer', 'Long', 'Double', 'Float', 'Byte', or 'Short'.\n" +
+                "Received: "+n1.getClass().getName()+" and "+n2.getClass().getName());
     }
 
     public static Number div(Number n1, Number n2) {
@@ -504,13 +523,70 @@ public class NumberUtils {
                 return num / nd;
             }
         }
-        return n1.doubleValue()/n2.doubleValue();
+        throw new IllegalArgumentException("Arguments must be one of the following classes: 'Integer', 'Long', 'Double', 'Float', 'Byte', or 'Short'.\n" +
+                "Received: "+n1.getClass().getName()+" and "+n2.getClass().getName());
     }
 
-    public Number parseNum(String str) {
-        if (str.matches("\\d+")) return new Integer(str);
-        else if (str.matches("\\d+L")) return new Long(str);
-        else if (str.matches("\\d*\\.\\d+f")) return new Float(str);
-        return new Double(str);
+    /**
+     * parseNum uses parametric polymorphism to parse <i>most</i> numbers.
+     *
+     * ints must fulfill following constraints:
+     *     match the regex [-+]?\d+
+     *     the numeric value must be in the range [-2147483648, 2147483647]
+     *
+     * longs must fulfill following constraints:
+     *     match the regex [-+]?\d+
+     *     the numeric value must be in the range [-9223372036854775808, 9223372036854775807]
+     *
+     * floats must fulfill following constraints:
+     *     match the regex [-+]?(\d+|\d*\.\d+|\d+\.\d*)f
+     *
+     * doubles must fulfill following constraints:
+     *     match the regex [-+]?(\d+|\d*\.\d+|\d+\.\d*)d?
+     *
+     *
+     * @param num
+     *        The number to parse
+     * @return Either the parsed number, or an exception
+     */
+    public static Number parseNum(String num) {
+        if (num.matches("[-+]?\\d+") &&
+            num.charAt(0) == '-' ? "-2147483648".compareTo(num) >= 0: "2147483647".compareTo(num) <= 0) {
+            return Integer.valueOf(num);
+        }
+        else if (num.matches("[-+]?\\d+") &&
+                 num.charAt(0) == '-' ? "-9223372036854775808".compareTo(num) >= 0: "9223372036854775807".compareTo(num) <= 0)
+            return Long.valueOf(num);
+        else if (num.matches("[-+]?(\\d+|\\d*\\.\\d+|\\d+\\.\\d*)f")) return Float.valueOf(num);
+        else if (num.matches("[-+]?(\\d+|\\d*\\.\\d+|\\d+\\.\\d*)d?")) return Double.valueOf(num);
+        throw new NumberFormatException();
+    }
+
+    /**
+     * Factorial function
+     * @param n
+     *        A number which is an element of the <i>Nonnegative Integers</i>
+     * @return n! = foldr (*) 1 $ enumFromTo 1
+     */
+    public static Number factorial(Number n) {
+        Number accumulator = n;
+        if (n.intValue() == 0) return sub(n, sub(n,1));
+        while (n.intValue() > 1) {
+            n = sub(n,1);
+            accumulator = mul(n, accumulator);
+        }
+        return accumulator;
+    }
+
+    public static boolean isStdNum(Number n) {
+        boolean ret = n instanceof Integer;
+        ret = n instanceof Long       || ret;
+        ret = n instanceof Double     || ret;
+        ret = n instanceof Float      || ret;
+        ret = n instanceof Byte       || ret;
+        ret = n instanceof Short      || ret;
+        ret = n instanceof BigInteger || ret;
+        ret = n instanceof BigDecimal || ret;
+        return ret;
     }
 }

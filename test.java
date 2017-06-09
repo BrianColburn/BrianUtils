@@ -1,10 +1,10 @@
-import brian.Function;
 import brian.Prime;
 import brian.functional.InfList;
 import brian.numeric.Complex;
 import brian.numeric.IntegerRing;
 import brian.functional.InfIterator;
 import brian.functional.IterTools;
+import brian.numeric.NumberUtils;
 import brian.utils.list.IndexedLinkedList;
 import brian.utils.list.IntList;
 //import brian.utils.list.StreamList;
@@ -64,7 +64,7 @@ public class test {
         System.out.println(streamList.get(5));
         System.out.println(streamList.mapToInt(n -> n));
 
-        System.out.println(Function.factorial(6));
+        System.out.println(NumberUtils.factorial(6));
 
         IndexedLinkedList<Integer> indexedLinkedList = new IndexedLinkedList<>(intList);
         System.out.println(indexedLinkedList.size());

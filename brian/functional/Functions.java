@@ -41,12 +41,12 @@ public class Functions {
     public static <T,U,R> BiFunction<T,U,R> memoize(BiFunction<T,U,R> function) {
         maps.put(function, new ConcurrentHashMap());
         return (t, u) -> {
-            TwoTuple<T,U> tuple = new TwoTuple<>(t, u);
-            if (maps.get(function).containsKey(tuple))
-                return (R) maps.get(function).get(tuple);
+            Pair<T,U> pair = new Pair<>(t, u);
+            if (maps.get(function).containsKey(pair))
+                return (R) maps.get(function).get(pair);
             else {
                 R r = function.apply(t,u);
-                maps.get(function).put(tuple,r);
+                maps.get(function).put(pair,r);
                 return r;
             }
         };
@@ -68,25 +68,31 @@ public class Functions {
 
 
     // ---------- Misc Methods ---------- //
-    // curry : (T × U -> R) -> (T -> U -> R)
-    // uncurry : (T -> U -> R) -> (T × U -> R)
-    // uncurry(curry(f)) == f
-    // curry(uncurry(f)) == f
 
+    // curry : (T × U -> R) -> (T -> U -> R)
+    // uncurry(curry(f)) == f
     public static <T,U,R> Function<T, Function<U, R>> curry(BiFunction<T,U,R> biFunction) {
         return t -> u -> biFunction.apply(t, u);
     }
 
+    // uncurry : (T -> U -> R) -> (T × U -> R)
+    // curry(uncurry(f)) == f
     public static <T,U,R> BiFunction<T,U,R> uncurry(Function<T, Function<U, R>> function) {
         return (t, u) -> function.apply(t).apply(u);
+    }
+
+    // compose : (B -> A) × (C -> B) × ... × (Y -> X) × (Z -> Y) -> (Z -> A)
+    // compose(func1, func2,..., funcn-1, funcn) == func1.compose(func2.compose(...funcn-1.compose(funcn) ...))
+    public static <T, R> Function<T,R> compose(Function<T,R> lastFunc, Function<?,?>... otherFuncs) {
+        return t -> lastFunc.apply(foldl((T x, Function f) -> (T) f.apply(x), t, otherFuncs));
     }
 
 
 
     // ---------- Map / Fold Methods for various classes ---------- //
-    // map : (T -> R) × (Collection | T) -> Collection | R
-    // foldr : (T × R -> R) × R × (Collection | T) -> R
-    // foldl : (R × T -> R) × R × (Collection | T) -> R
+    // map : (T -> R) × (Collection[T]) -> Collection | R
+    // foldr : (T × R -> R) × R × (Collection[T]) -> R
+    // foldl : (R × T -> R) × R × (Collection[T]) -> R
 
     // ----- Iterator
     public static <T,R> Iterator<R> map(Function<T,R> function, Iterator<T> iterator) {
@@ -115,9 +121,10 @@ public class Functions {
     public static <T,R> List<R> map(Function<T,R> function, List<T> list) {
         List<R> retList;
         try {
-            retList = list.getClass().newInstance();
-        } catch (Exception e) {
-            retList = new ArrayList<>(list.size());
+            retList = list.getClass().newInstance(); // In theory, this is a rather user friendly feature
+                                                     // If you use map on a SpecialList it returns a SpecialList
+        } catch (InstantiationException | IllegalAccessException   e) {
+            retList = new ArrayList<>(list.size());  // In practice, this may be the best option
         }
         for (T t : list) {
             retList.add(function.apply(t));
@@ -164,5 +171,22 @@ public class Functions {
             accumulator = function.apply(accumulator, array[i]);
         }
         return accumulator;
+    }
+
+
+
+    // ---------- Pair Class ---------- //
+    public static class Pair<F,S> {
+        public F first;
+        public S second;
+        public Pair(F first, S second) {
+            this.first = first;
+            this.second  = second;
+        }
+
+        @Override
+        public String toString() {
+            return "("+first+", "+second+")";
+        }
     }
 }
