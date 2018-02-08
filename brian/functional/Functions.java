@@ -1,6 +1,7 @@
 package brian.functional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +21,7 @@ public class Functions {
 
     private static ConcurrentMap<Object, ConcurrentMap> maps = new ConcurrentHashMap<>();
 
-    public static <T,R> Function<T,R> memoize(RecursiveFunction<T,R> function) {
+    public static <T,R> RecursiveFunction<T,R> memoize(RecursiveFunction<T,R> function) {
         function.function = memoize(function.function);
         return function;
     }
@@ -90,7 +91,7 @@ public class Functions {
 
 
     // ---------- Map / Fold Methods for various classes ---------- //
-    // map : (T -> R) × (Collection[T]) -> Collection | R
+    // map   : (T -> R) × (Collection[T]) -> Collection[R]
     // foldr : (T × R -> R) × R × (Collection[T]) -> R
     // foldl : (R × T -> R) × R × (Collection[T]) -> R
 
@@ -173,6 +174,13 @@ public class Functions {
         return accumulator;
     }
 
+    // ----- Iterable
+    public static <T,R> R foldr(BiFunction<T,R,R> function, R init, Iterable<T> iterable) {
+        Box<R> accumulator = new Box<>(init);
+        iterable.forEach(value -> accumulator.modify(acc -> function.apply(value, acc)));
+        return accumulator.item;
+    }
+
 
 
     // ---------- Pair Class ---------- //
@@ -188,5 +196,27 @@ public class Functions {
         public String toString() {
             return "("+first+", "+second+")";
         }
+    }
+
+
+
+    /*public static <T,R> Iterator<R> comprehension(Function<T,R> func, Iterable<T> domain, Predicate<T>... predicates) {
+        return comprehension(func, domain.iterator(), predicates);
+    }*/
+
+    public static <T,R> Iterator<R> comprehension(Function<T,R> func, Iterator<T> domain, Predicate<T>... predicates) {
+        return new Iterator<R>() {
+            public boolean hasNext() {
+                return false;
+            }
+
+            public R next() {
+                Box<T> x = new Box<>(domain.next());
+                while (!foldr((predicate, bool) -> bool && predicate.test(x.item), true, predicates)) {
+                    x.modify(item -> domain.next());
+                }
+                return func.apply(x.item);
+            }
+        };
     }
 }

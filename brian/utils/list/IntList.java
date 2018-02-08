@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.BaseStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -32,11 +33,9 @@ public class IntList extends ArrayList<Integer> implements NumberList<IntStream,
                 add(n);
     }
 
-    public IntList(IntStream... streams) {
-        Stream.of(streams).forEach(stream -> stream.forEach(this::add));
-
-        //for (IntStream stream : streams)
-        //    stream.forEachOrdered(this::add);
+    public <T extends Number> IntList(BaseStream<T, ?>... streams) {
+        for (BaseStream<T, ?> stream : streams)
+            stream.iterator().forEachRemaining(n -> this.add(n.intValue()));
     }
 
     @Override

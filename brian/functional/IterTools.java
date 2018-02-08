@@ -121,11 +121,26 @@ public class IterTools {
 
     // This should be rewritten so that it's lazy.
     public static <T> Iterator<T> compress(Iterator<T> iterator, Iterable<Number> nums) {
+        Iterator<Number> filter = nums.iterator();
+        return new Iterator<T>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                while (filter.next().equals(0)) {
+                    iterator.next();
+                }
+                return iterator.next();
+            }
+        };/*
         List<T> filtered = new ArrayList<>();
         Iterator<Number> filters = nums.iterator();
         iterator.forEachRemaining(e -> {
             if (filters.next().equals(1)) filtered.add(e);
         });
-        return filtered.iterator();
+        return filtered.iterator();*/
     }
 }

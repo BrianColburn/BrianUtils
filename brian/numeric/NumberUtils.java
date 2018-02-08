@@ -10,16 +10,16 @@ import java.math.BigInteger;
  */
 public class NumberUtils {
     public static Number addMany(Number... nums) {
-        return Functions.foldr((Number a, Number b) -> add(a, b), 0, nums);
+        return Functions.foldr(NumberUtils::add, 0, nums);
     }
     public static Number subMany(Number... nums) {
-        return Functions.foldr((Number a, Number b) -> sub(a, b), 0, nums);
+        return Functions.foldr(NumberUtils::sub, 0, nums);
     }
     public static Number mulMany(Number... nums) {
-        return Functions.foldr((Number a, Number b) -> mul(a, b), 1, nums);
+        return Functions.foldr(NumberUtils::mul, 1, nums);
     }
     public static Number divMany(Number... nums) {
-        return Functions.foldr((Number a, Number b) -> div(a, b), 1, nums);
+        return Functions.foldr(NumberUtils::div, 1, nums);
     }
 
     public static Number add(Number n1, Number n2) {
@@ -568,6 +568,29 @@ public class NumberUtils {
      *        A number which is an element of the <i>Nonnegative Integers</i>
      * @return n! = foldr (*) 1 $ enumFromTo 1
      */
+    public static Integer factorial(Integer n) {
+        int acc = 1;
+        for (int i = 2; i <= n; i++) {
+            acc *= i;
+        }
+        return acc;
+    }
+
+    public static Long factorial(Long n) {
+        long acc = 1;
+        for (int i = 2; i <= n; i++) {
+            acc *= i;
+        }
+        return acc;
+    }
+    public static BigInteger factorial(BigInteger n) {
+        BigInteger acc = BigInteger.ONE;
+        for (BigInteger i = BigInteger.ONE.add(BigInteger.ONE); i.compareTo(n) < 1; i = i.add(BigInteger.ONE)) {
+            acc = acc.multiply(i);
+        }
+        return acc;
+    }
+
     public static Number factorial(Number n) {
         Number accumulator = n;
         if (n.intValue() == 0) return sub(n, sub(n,1));
